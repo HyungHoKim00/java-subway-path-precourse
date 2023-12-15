@@ -52,16 +52,19 @@ public class RouteRepository {
             DijkstraShortestPath<String, DefaultWeightedEdge> dijkstraShortestPath) {
         List<String> shortestPath =
                 dijkstraShortestPath.getPath(startAndEndStation[0], startAndEndStation[1]).getVertexList();
+        if (shortestPath == null) {
+            return null;
+        }
         double totalDistance = IntStream.range(0, shortestPath.size() - 1)
-                .mapToObj(i -> distance.getEdge(shortestPath.get(i), shortestPath.get(i + 1)))
+                .mapToObj(index -> distance.getEdge(shortestPath.get(index), shortestPath.get(index + 1)))
                 .mapToDouble(distance::getEdgeWeight)
                 .sum();
         double totalTime = IntStream.range(0, shortestPath.size() - 1)
-                .mapToObj(i -> time.getEdge(shortestPath.get(i), shortestPath.get(i + 1)))
+                .mapToObj(index -> time.getEdge(shortestPath.get(index), shortestPath.get(index + 1)))
                 .mapToDouble(time::getEdgeWeight)
                 .sum();
-        shortestPath.add(String.valueOf(totalDistance));
-        shortestPath.add(String.valueOf(totalTime));
+        shortestPath.add(String.valueOf((int) totalDistance));
+        shortestPath.add(String.valueOf((int) totalTime));
         return shortestPath;
     }
 }
