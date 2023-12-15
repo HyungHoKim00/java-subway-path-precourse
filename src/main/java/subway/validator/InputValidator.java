@@ -1,4 +1,4 @@
-package subway.view;
+package subway.validator;
 
 import subway.domain.StationRepository;
 
