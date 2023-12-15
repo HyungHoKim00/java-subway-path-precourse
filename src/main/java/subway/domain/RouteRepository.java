@@ -2,9 +2,11 @@ package subway.domain;
 
 import java.util.List;
 import java.util.stream.IntStream;
+import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.WeightedMultigraph;
+import subway.validator.RouteValidator;
 
 public class RouteRepository {
     private static final WeightedMultigraph<String, DefaultWeightedEdge> distance
@@ -27,6 +29,10 @@ public class RouteRepository {
         });
     }
 
+    public static boolean containsRoute(String[] startAndEndStation) {
+        return distance.getEdge(startAndEndStation[0], startAndEndStation[1]) != null;
+    }
+
     public static List<String> selectRouteBySelectionCriteria(String selectionCriteria, String[] startAndEndStation) {
         if (selectionCriteria.equals("1")) {
             return selectShortestDistanceRoute(startAndEndStation);
@@ -38,33 +44,32 @@ public class RouteRepository {
     }
 
     private static List<String> selectShortestDistanceRoute(String[] startAndEndStation) {
-        DijkstraShortestPath<String, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(distance);
-        return createDetails(startAndEndStation, dijkstraShortestPath);
+        DijkstraShortestPath<String, DefaultWeightedEdge> shortestPath = new DijkstraShortestPath<>(distance);
+        return createDetails(startAndEndStation, shortestPath);
     }
 
     private static List<String> selectShortestTimeRoute(String[] startAndEndStation) {
-        DijkstraShortestPath<String, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(time);
-        return createDetails(startAndEndStation, dijkstraShortestPath);
+        DijkstraShortestPath<String, DefaultWeightedEdge> shortestPath = new DijkstraShortestPath<>(time);
+        return createDetails(startAndEndStation, shortestPath);
     }
 
     private static List<String> createDetails(
             String[] startAndEndStation,
-            DijkstraShortestPath<String, DefaultWeightedEdge> dijkstraShortestPath) {
-        List<String> shortestPath =
-                dijkstraShortestPath.getPath(startAndEndStation[0], startAndEndStation[1]).getVertexList();
-        if (shortestPath == null) {
-            return null;
-        }
-        double totalDistance = IntStream.range(0, shortestPath.size() - 1)
-                .mapToObj(index -> distance.getEdge(shortestPath.get(index), shortestPath.get(index + 1)))
+            DijkstraShortestPath<String, DefaultWeightedEdge> shortestPath) {
+        GraphPath<String, DefaultWeightedEdge> shortestRoute
+                = shortestPath.getPath(startAndEndStation[0], startAndEndStation[1]);
+        RouteValidator.validateByRoute(shortestRoute);
+        List<String> pathDetails = shortestRoute.getVertexList();
+        double totalDistance = IntStream.range(0, pathDetails.size() - 1)
+                .mapToObj(index -> distance.getEdge(pathDetails.get(index), pathDetails.get(index + 1)))
                 .mapToDouble(distance::getEdgeWeight)
                 .sum();
-        double totalTime = IntStream.range(0, shortestPath.size() - 1)
-                .mapToObj(index -> time.getEdge(shortestPath.get(index), shortestPath.get(index + 1)))
+        double totalTime = IntStream.range(0, pathDetails.size() - 1)
+                .mapToObj(index -> time.getEdge(pathDetails.get(index), pathDetails.get(index + 1)))
                 .mapToDouble(time::getEdgeWeight)
                 .sum();
-        shortestPath.add(String.valueOf((int) totalDistance));
-        shortestPath.add(String.valueOf((int) totalTime));
-        return shortestPath;
+        pathDetails.add(String.valueOf((int) totalDistance));
+        pathDetails.add(String.valueOf((int) totalTime));
+        return pathDetails;
     }
 }

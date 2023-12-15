@@ -31,7 +31,7 @@ public class RouteRepositoryTest {
         assertThat(result).isEqualTo(expected);
     }
 
-    @DisplayName("최단 거리 정보 생성")
+    @DisplayName("최단 시간 정보 생성")
     @Test
     void selectRouteBy2ReturnsShortestTimeRouteDetails() {
         List<String> result = RouteRepository.selectRouteBySelectionCriteria("2", new String[]{"교대역", "역삼역"});

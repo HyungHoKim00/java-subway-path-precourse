@@ -1,6 +1,7 @@
 package subway.validator;
 
-import java.util.List;
+import org.jgrapht.GraphPath;
+import org.jgrapht.graph.DefaultWeightedEdge;
 
 public class RouteValidator {
     private static final String SAME_STATION = "출발역과 도착역이 동일합니다.";
@@ -12,8 +13,8 @@ public class RouteValidator {
         }
     }
 
-    public static void validateByRoute(List<String> bestRoute) {
-        if (bestRoute == null) {
+    public static void validateByRoute(GraphPath<String, DefaultWeightedEdge> shortestRoute) {
+        if (shortestRoute == null) {
             throw new IllegalArgumentException(NO_ROUTE);
         }
     }

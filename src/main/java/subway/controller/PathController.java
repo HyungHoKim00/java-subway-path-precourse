@@ -78,9 +78,9 @@ public class PathController {
     }
 
     private List<String> createValidatedRoute(String selectionCriteria, String[] startAndEndStation) {
-        List<String> bestRoute = RouteRepository.selectRouteBySelectionCriteria(selectionCriteria, startAndEndStation);
         try {
-            RouteValidator.validateByRoute(bestRoute);
+            List<String> bestRoute = RouteRepository.selectRouteBySelectionCriteria(selectionCriteria,
+                    startAndEndStation);
             return bestRoute;
         } catch (IllegalArgumentException e) {
             outputView.printErrorMessage(e.getMessage());
