@@ -1,5 +1,6 @@
 package subway.controller;
 
+import java.util.List;
 import java.util.Scanner;
 import subway.domain.RouteRepository;
 import subway.validator.RouteValidator;
@@ -27,7 +28,8 @@ public class PathController {
             run();
         }
         String[] startAndEndStation = createValidatedStartAndEndStation();
-        outputView.printRoute(RouteRepository.selectRouteBySelectionCriteria(selectionCriteria, startAndEndStation));
+        List<String> bestRoute = createValidatedRoute(selectionCriteria, startAndEndStation);
+        outputView.printRoute(bestRoute);
         run();
     }
 
@@ -66,8 +68,20 @@ public class PathController {
             startStation = inputView.readStation();
             outputView.printEndStationRequestMessage();
             endStation = inputView.readStation();
-            RouteValidator.validate(startStation, endStation);
+            RouteValidator.validateByStation(startStation, endStation);
             return new String[]{startStation, endStation};
+        } catch (IllegalArgumentException e) {
+            outputView.printErrorMessage(e.getMessage());
+            selectRoute(createValidatedSelectionCriteria());
+        }
+        return null;
+    }
+
+    private List<String> createValidatedRoute(String selectionCriteria, String[] startAndEndStation) {
+        List<String> bestRoute = RouteRepository.selectRouteBySelectionCriteria(selectionCriteria, startAndEndStation);
+        try {
+            RouteValidator.validateByRoute(bestRoute);
+            return bestRoute;
         } catch (IllegalArgumentException e) {
             outputView.printErrorMessage(e.getMessage());
             selectRoute(createValidatedSelectionCriteria());
