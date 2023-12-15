@@ -1,5 +1,7 @@
 package subway.view;
 
+import subway.domain.StationRepository;
+
 public class InputValidator {
     private static final String VIEW_OR_EXIT_REGEX = "^([1Q])$";
     private static final String SELECTION_CRITERIA_REGEX = "^([12Q])$";
@@ -13,6 +15,12 @@ public class InputValidator {
 
     public static void validateSelectionCriteria(String selectionCriteria) {
         if (!selectionCriteria.matches(SELECTION_CRITERIA_REGEX)) {
+            throw new IllegalArgumentException(INVALID_INPUT);
+        }
+    }
+
+    public static void validateStation(String station) {
+        if (!StationRepository.contains(station)) {
             throw new IllegalArgumentException(INVALID_INPUT);
         }
     }

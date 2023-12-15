@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class InputView {
     private final Scanner scanner;
 
-    InputView(Scanner scanner) {
+    public InputView(Scanner scanner) {
         this.scanner = scanner;
     }
 
@@ -19,5 +19,11 @@ public class InputView {
         String selectionCriteria = scanner.nextLine();
         InputValidator.validateSelectionCriteria(selectionCriteria);
         return selectionCriteria;
+    }
+
+    public String readStation() {
+        String station = scanner.nextLine();
+        InputValidator.validateStation(station);
+        return station;
     }
 }
