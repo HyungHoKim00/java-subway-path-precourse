@@ -12,5 +12,12 @@ public class InputView {
     public String readViewOrExit() {
         String viewOrExit = scanner.nextLine();
         InputValidator.validateViewOrExit(viewOrExit);
+        return viewOrExit;
+    }
+
+    public String readSelectionCriteria() {
+        String selectionCriteria = scanner.nextLine();
+        InputValidator.validateSelectionCriteria(selectionCriteria);
+        return selectionCriteria;
     }
 }
